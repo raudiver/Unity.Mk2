@@ -42,8 +42,6 @@ public class dragNDrop : MonoBehaviour
         {
             dndProcessInProgress = false;
         }
-
-
     }
 
     bool isMouseOverObject()
