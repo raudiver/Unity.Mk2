@@ -7,10 +7,18 @@ public class raycastFromSquad : MonoBehaviour
 {
     [SerializeField] Color colorToChange = Color.green;
     [SerializeField] Color defaultFieldColor = Color.green;
-    bool wasHit = false;
+
     GameObject objectThatHitting = null;
     GameObject objectThatWasHitting = null;
     string nameCurrentObject = "no object yet";
+
+    listForRaycast parentScript;
+
+    public void Start()
+    {
+        parentScript = transform.parent.gameObject.GetComponent<listForRaycast>();
+        Debug.Log(parentScript);
+    }
 
 
 
@@ -23,20 +31,33 @@ public class raycastFromSquad : MonoBehaviour
         if (hit.collider != null && nameCurrentObject != hit.collider.name)
         {
             objectThatHitting = hit.collider.gameObject;
+            parentScript.listWithHittedObjects.Add(objectThatHitting);
 
-            if (objectThatWasHitting != null && objectThatWasHitting != objectThatHitting)
+            if (objectThatWasHitting != null && objectThatWasHitting != objectThatHitting)//comment for highlight changes && !parentScript.listWithHittedObjects.Contains(objectThatWasHitting)
             {
-                objectThatWasHitting.GetComponent<SpriteRenderer>().color = defaultFieldColor;
+                parentScript.listWithHittedObjects.Remove(objectThatWasHitting);
+                
+                if (!parentScript.listWithHittedObjects.Contains(objectThatWasHitting))
+                {
+                    objectThatWasHitting.GetComponent<SpriteRenderer>().color = defaultFieldColor;
+                }
             }
             
             nameCurrentObject = hit.collider.name;
             hit.collider.GetComponent<SpriteRenderer>().color = colorToChange;
             objectThatWasHitting = hit.collider.gameObject;
         }
-        else if (objectThatWasHitting != null && hit.collider == null)
+        else if (objectThatWasHitting != null && hit.collider == null)//comment for highlight changes &&!parentScript.listWithHittedObjects.Contains(objectThatWasHitting)
         {
-            objectThatWasHitting.GetComponent<SpriteRenderer>().color = defaultFieldColor;
+            parentScript.listWithHittedObjects.Remove(objectThatWasHitting); //comment for highlight changes
+            
+            if (!parentScript.listWithHittedObjects.Contains(objectThatWasHitting))
+            {
+                objectThatWasHitting.GetComponent<SpriteRenderer>().color = defaultFieldColor;
+            }
+
             nameCurrentObject = null;
+            objectThatWasHitting = null;
         }
 
     }
