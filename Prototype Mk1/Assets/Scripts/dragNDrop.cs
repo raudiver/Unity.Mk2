@@ -25,7 +25,7 @@ public class dragNDrop : MonoBehaviour
         //we need to store pointer pos and tranfrom it from screen coordinates to world coordinates
         mouseWorldPosition = Camera.main.ScreenToWorldPoint(mouse.position.ReadValue()); //we set every frame mouse pos in world coordinates
         
-        if (mouse.leftButton.wasPressedThisFrame && isMouseOverObject())
+        if (mouse.leftButton.wasPressedThisFrame && IsMouseOverObject())
         {
             objectStartPosition = transform.position;
             startMousePos = mouseWorldPosition;
@@ -36,19 +36,29 @@ public class dragNDrop : MonoBehaviour
         {
             Vector2 deltaPosition = startMousePos - mouseWorldPosition;
             transform.position = objectStartPosition - deltaPosition;
+            //transform.localScale = new Vector3(0.8f, 0.8f, 0);
         }
 
         if (mouse.leftButton.wasReleasedThisFrame)
         {
             dndProcessInProgress = false;
+            //transform.localScale = new Vector3(1f, 1f, 0);
         }
     }
 
-    bool isMouseOverObject()
+    bool IsMouseOverObject()
     {
         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(mouse.position.ReadValue());
-        Collider2D collider = GetComponent<Collider2D>();
+        PolygonCollider2D collider = GetComponent<PolygonCollider2D>();
         return collider.bounds.Contains(mousePosition);
+    }
+
+    void OnRotate(InputValue value)
+    {
+        if (IsMouseOverObject() && mouse.leftButton.IsPressed())
+        {
+            transform.Rotate(Vector3.forward * 90f);
+        }
     }
 }
 
