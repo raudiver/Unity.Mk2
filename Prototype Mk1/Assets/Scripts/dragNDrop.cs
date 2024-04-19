@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 public class dragNDrop : MonoBehaviour
 {
@@ -15,16 +15,23 @@ public class dragNDrop : MonoBehaviour
     Vector2 objectStartPosition;
     bool dndProcessInProgress = false;
     Mouse mouse;
+    raycastFromSquad childRaycastFromSquad;
+    PolygonCollider2D colliderParent;
 
     private void Start()
     {
         mouse = Mouse.current;
+        childRaycastFromSquad = GetComponentInChildren<raycastFromSquad>();
+        Debug.Log(childRaycastFromSquad);
+        colliderParent = GetComponent<PolygonCollider2D>();
+
+
     }
     void Update()
     {
         //we need to store pointer pos and tranfrom it from screen coordinates to world coordinates
         mouseWorldPosition = Camera.main.ScreenToWorldPoint(mouse.position.ReadValue()); //we set every frame mouse pos in world coordinates
-        
+
         if (mouse.leftButton.wasPressedThisFrame && IsMouseOverObject())
         {
             objectStartPosition = transform.position;
@@ -33,7 +40,7 @@ public class dragNDrop : MonoBehaviour
         }
 
         if (mouse.leftButton.IsPressed() && dndProcessInProgress)
-        {
+        {  
             Vector2 deltaPosition = startMousePos - mouseWorldPosition;
             transform.position = objectStartPosition - deltaPosition;
             //transform.localScale = new Vector3(0.8f, 0.8f, 0);
@@ -43,14 +50,17 @@ public class dragNDrop : MonoBehaviour
         {
             dndProcessInProgress = false;
             //transform.localScale = new Vector3(1f, 1f, 0);
+            if (IsMouseOverObject())
+            {
+                transform.position = transform.position - childRaycastFromSquad.GetClosesDistanceToCell();
+            }
         }
     }
 
     bool IsMouseOverObject()
     {
         Vector2 mousePosition = Camera.main.ScreenToWorldPoint(mouse.position.ReadValue());
-        PolygonCollider2D collider = GetComponent<PolygonCollider2D>();
-        return collider.bounds.Contains(mousePosition);
+        return colliderParent.OverlapPoint(mousePosition);
     }
 
     void OnRotate(InputValue value)

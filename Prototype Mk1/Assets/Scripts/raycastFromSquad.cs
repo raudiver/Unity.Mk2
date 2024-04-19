@@ -70,4 +70,16 @@ public class raycastFromSquad : MonoBehaviour
             objectThatWasHitting = null;
         }
     }
+
+    public Vector3 GetClosesDistanceToCell()
+    {
+        Vector3 cellPos = transform.position;
+        if (objectThatWasHitting != null)
+        {
+            Transform transformCell = objectThatHitting.GetComponent<Transform>();
+            Vector3 closestCellPos = transformCell.position;
+            return cellPos - closestCellPos;
+        }
+        return new Vector3 (Mathf.Epsilon, Mathf.Epsilon);
+    }
 }
